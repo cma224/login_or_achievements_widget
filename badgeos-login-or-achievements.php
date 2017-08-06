@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: BadgeOS Login Or Achievements Widget
+ * Plugin Name: Login Or Achievements Widget for BadgeOS
  * Description: This BadgeOS add-on adds a widget to display earned achievements for logged in users and a login box for logged out users.
  * Version: 1.0.0
  * License: GNU AGPL
@@ -24,23 +24,23 @@ class BadgeOS_Login_Or_Achievements {
 	 * @since 1.0.0
 	 */
 	function __construct() {
-
+		
 		// Define plugin constants
 		$this->basename       = plugin_basename( __FILE__ );
 		$this->directory_path = plugin_dir_path( __FILE__ );
 		$this->directory_url  = plugins_url( dirname( $this->basename ) );
-
+	
 		// Load translations
 		load_plugin_textdomain( 'badgeos-login-or-achievements', false, dirname( $this->basename ) . '/languages' );
-
+	
 		// Run our activation and deactivation hooks
 		register_activation_hook( __FILE__, array( $this, 'activate' ) );
-		register_activation_hook( __FILE__, array( $this, 'deactivate' ) );
-
+		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
+	
 		// If BadgeOS is unavailable, deactivate our plugin
 		add_action( 'admin_notices', array( $this, 'maybe_disable_plugin' ) );
-
-        // use widgets_init action hook to execute custom function
+	
+	     // use widgets_init action hook to execute custom function
         add_action( 'widgets_init', array( $this, 'badgeos_register_login_or_achievement_widget' ) );
 
 		// Hook in our dependent files and methods
@@ -48,7 +48,7 @@ class BadgeOS_Login_Or_Achievements {
 
         // Load custom js and css
         add_action( 'wp_enqueue_scripts', array( $this, 'load_scripts_and_styles' ), 1 );
-
+        
 	}
 
 
@@ -123,7 +123,7 @@ class BadgeOS_Login_Or_Achievements {
 	 */
 	public static function meets_requirements() {
 		
-		if ( class_exists('BadgeOS')){
+		if (class_exists('BadgeOS')){
 			return true;
 		}
 		else{
@@ -154,6 +154,10 @@ class BadgeOS_Login_Or_Achievements {
 
 			// Deactivate our plugin
 			deactivate_plugins( $this->basename );
+			
+			if ( isset( $_GET['activate'] ) ) 
+            unset( $_GET['activate'] );
+        
 		}
 
 	}
